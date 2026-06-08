@@ -1,0 +1,515 @@
+<!DOCTYPE html><html lang="en"><plasmo-csui id="g0-textarea-recorder"></plasmo-csui><head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Surgeon Performance Readiness · Rachel Neylan</title>
+<style>
+  :root{
+    /* surfaces */
+    --white:#FFFFFF;
+    --offwhite:#F3F4F5;
+    --offwhite-2:#E9EBED;
+    --card:#FFFFFF;
+    /* gunmetal ash (not black) */
+    --ash:#2C3238;
+    --ash-2:#535B62;
+    --ash-soft:#8A9197;
+    --ash-deep:#23282D;
+    /* coral accent */
+    --coral:#F26B5B;
+    --coral-deep:#D14C3B;
+    --coral-light:#FF8675;
+    --line:rgba(44,50,56,.16);
+    --line-soft:rgba(44,50,56,.08);
+    --shadow:0 30px 70px -32px rgba(35,40,45,.45);
+    --font-display:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+    --font-serif:Georgia,"Times New Roman",serif;
+    --font-body:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+    /* type scale */
+    --type-display:92px;
+    --type-h1:78px;
+    --type-h2:60px;
+    --type-subtitle:38px;
+    --type-lead:34px;
+    --type-body:30px;
+    --type-small:24px;
+    --type-eyebrow:24px;
+    /* spacing */
+    --pad-x:130px;
+    --pad-y:104px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  deck-stage:not(:defined){visibility:hidden}
+  body{font-family:var(--font-body);color:var(--ash);background:#1a1e22;
+    -webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:inherit}
+
+  section{
+    background:var(--white);
+    padding:var(--pad-y) var(--pad-x);
+    display:flex;flex-direction:column;justify-content:center;
+    overflow:hidden;
+  }
+  section.alt{background:var(--offwhite)}
+  section.dark{background:linear-gradient(158deg,#2C3238 0%,#23282D 52%,#363D44 100%);color:var(--white)}
+
+  /* ---- type ---- */
+  .eyebrow{font-size:var(--type-eyebrow);letter-spacing:.28em;text-transform:uppercase;font-weight:700;
+    color:var(--coral-deep);display:flex;align-items:center;gap:18px;margin-bottom:34px}
+  .eyebrow::before{content:"";width:46px;height:3px;background:var(--coral);display:inline-block;flex:none}
+  .dark .eyebrow{color:var(--coral-light)}
+  .dark .eyebrow::before{background:var(--coral-light)}
+
+  h1{font-family:var(--font-display);font-weight:600;line-height:1.0;letter-spacing:-.022em;
+     font-size:var(--type-h1)}
+  h2{font-family:var(--font-display);font-weight:600;line-height:1.05;letter-spacing:-.02em;
+     font-size:var(--type-h2);color:var(--ash)}
+  .dark h2{color:#fff}
+  em,.serif-em{font-family:var(--font-serif);font-style:italic;font-weight:400;color:var(--coral-deep)}
+  .dark em{color:var(--coral-light)}
+  .lead{font-size:var(--type-lead);color:var(--ash-2);max-width:64ch;line-height:1.4}
+  .dark .lead{color:#D8DCDF}
+  p.body{font-size:var(--type-body);color:var(--ash-2);max-width:58ch;line-height:1.5}
+  .dark p.body{color:#CDD2D6}
+  .small{font-size:var(--type-small);color:var(--ash-soft);line-height:1.45}
+  .kicker-serif{font-family:var(--font-serif);font-style:italic}
+
+  /* ---- footer ---- */
+  .foot{position:absolute;left:var(--pad-x);right:var(--pad-x);bottom:46px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:18px;letter-spacing:.16em;text-transform:uppercase;color:var(--ash-soft)}
+  .foot .b{font-weight:700;color:var(--ash-2)}
+  .foot a{text-decoration:none}
+  .dark .foot{color:rgba(214,220,224,.6)}
+  .dark .foot .b{color:#D6DCE0}
+
+  /* ---- pulse line ---- */
+  .bg-pulse{position:absolute;left:0;right:0;bottom:9%;opacity:.13;z-index:1;height:130px;color:var(--coral)}
+  .dark .bg-pulse{color:var(--coral-light);opacity:.16}
+  .bg-pulse path{fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ---- layout helpers ---- */
+  .wrap{position:relative;z-index:3;width:100%}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:96px;align-items:center;position:relative;z-index:3}
+  .two.media-right{grid-template-columns:1.04fr .96fr}
+
+  /* image slots / frames */
+  image-slot,.frame{border-radius:10px;box-shadow:var(--shadow)}
+  .slot-tall{width:100%;height:660px}
+  .slot-portrait{width:100%;height:760px}
+  .frame{position:relative;overflow:hidden;background:
+      radial-gradient(120% 120% at 22% 12%, rgba(242,107,91,.35), transparent 55%),
+      linear-gradient(150deg,#2C3238,#23282D)}
+  .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .fr-tall{width:100%;height:640px}
+  .fr-portrait{width:100%;height:760px}
+  .frame .cap{position:absolute;left:18px;bottom:16px;z-index:3;font-size:var(--type-small);
+    letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.94);
+    background:rgba(35,40,45,.55);backdrop-filter:blur(3px);padding:7px 14px;border-radius:30px}
+
+  /* ---- stats ---- */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:48px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:38px 34px}
+  .stat .big{font-family:var(--font-display);font-weight:700;font-size:84px;line-height:.95;color:var(--coral-deep)}
+  .stat .lbl{margin-top:20px;font-size:var(--type-small);color:var(--ash-2);line-height:1.45}
+  .stat .src{margin-top:18px;font-size:var(--type-small);color:var(--ash-soft);letter-spacing:.01em}
+
+  /* ---- stack list ---- */
+  .stack-list{margin-top:46px;display:flex;flex-direction:column}
+  .stack-row{display:grid;grid-template-columns:64px 1fr;gap:28px;padding:30px 0;border-top:1px solid var(--line)}
+  .stack-row:last-child{border-bottom:1px solid var(--line)}
+  .stack-row .n{font-family:var(--font-serif);font-style:italic;color:var(--coral-deep);font-size:40px}
+  .stack-row h4{font-size:32px;font-weight:600;margin-bottom:8px;letter-spacing:.01em;color:var(--ash)}
+  .stack-row p{font-size:var(--type-small);color:var(--ash-soft);max-width:80ch;line-height:1.45}
+
+  /* ---- outcomes ---- */
+  .out{display:grid;grid-template-columns:repeat(5,1fr);gap:26px;margin-top:54px}
+  .out .o{border-top:3px solid var(--coral);padding-top:22px}
+  .out .o h5{font-size:28px;font-weight:700;margin-bottom:12px;line-height:1.15;color:var(--ash)}
+  .out .o p{font-size:var(--type-small);color:var(--ash-soft);line-height:1.45}
+
+  /* ---- suite cards ---- */
+  .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;margin-top:60px}
+  .ocard{position:relative;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);
+    border-radius:16px;padding:32px 26px;display:flex;flex-direction:column;gap:16px;min-height:340px}
+  .ocard .tag{font-size:var(--type-small);letter-spacing:.16em;text-transform:uppercase;color:var(--coral-light);font-weight:700}
+  .ocard h4{font-family:var(--font-display);font-weight:600;font-size:32px;line-height:1.1;color:#fff}
+  .ocard p{font-size:var(--type-small);color:#C5CACE;margin-top:auto;line-height:1.4}
+  .ocard .num{font-family:var(--font-serif);font-style:italic;color:rgba(255,255,255,.22);
+    font-size:40px;position:absolute;top:22px;right:24px}
+
+  /* ---- tiers ---- */
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:48px}
+  .tier{border:1px solid var(--line);border-radius:18px;padding:38px 34px;background:var(--card);display:flex;flex-direction:column}
+  .tier.feature{background:linear-gradient(168deg,#363D44,#23282D);color:#fff;border-color:transparent}
+  .tier .t-tag{font-size:var(--type-small);letter-spacing:.14em;text-transform:uppercase;color:var(--coral-deep);font-weight:700}
+  .tier.feature .t-tag{color:var(--coral-light)}
+  .tier h4{font-family:var(--font-display);font-weight:600;font-size:36px;margin:14px 0 6px;color:var(--ash)}
+  .tier.feature h4{color:#fff}
+  .tier .per{font-size:var(--type-small);color:var(--ash-soft)}
+  .tier.feature .per{color:#C5CACE}
+  .tier ul{list-style:none;margin-top:26px;display:flex;flex-direction:column;gap:16px}
+  .tier li{font-size:var(--type-small);padding-left:30px;position:relative;color:var(--ash-2);line-height:1.35}
+  .tier.feature li{color:#E4E8EA}
+  .tier li::before{content:"";position:absolute;left:0;top:9px;width:11px;height:11px;border-radius:50%;
+    background:var(--coral);box-shadow:0 0 0 4px rgba(242,107,91,.22)}
+  .tier.feature li::before{background:var(--coral-light);box-shadow:0 0 0 4px rgba(255,134,117,.3)}
+
+  /* ---- scores ---- */
+  .scores{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:40px}
+  .score{border:1px solid var(--line);border-radius:18px;padding:34px 38px;background:var(--card)}
+  .score.feature{background:linear-gradient(168deg,#363D44,#23282D);color:#fff;border-color:transparent}
+  .score-h{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+  .score .code{font-family:var(--font-display);font-weight:700;font-size:56px;letter-spacing:.02em;color:var(--coral-deep)}
+  .score.feature .code{color:var(--coral-light)}
+  .score .scale{font-size:var(--type-small);letter-spacing:.12em;text-transform:uppercase;color:var(--ash-soft)}
+  .score.feature .scale{color:#C5CACE}
+  .score h4{font-family:var(--font-display);font-weight:600;font-size:34px;margin:14px 0 12px;color:var(--ash)}
+  .score.feature h4{color:#fff}
+  .score p{font-size:var(--type-small);color:var(--ash-2);line-height:1.45;margin:0}
+  .score.feature p{color:#E4E8EA}
+
+  /* ---- chips ---- */
+  .chips{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+  .chip{font-size:var(--type-small);border:1px solid var(--line);border-radius:30px;padding:12px 22px;color:var(--ash-2);background:var(--card);white-space:nowrap}
+  .appfeat{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
+  .appfeat span{font-size:var(--type-small);background:var(--card);border:1px solid var(--line);border-radius:30px;padding:12px 22px;color:var(--ash-2)}
+  .appfeat span.sc{color:var(--ash)}
+  .appfeat span.sc b{font-family:var(--font-display);font-weight:700;color:var(--coral-deep);letter-spacing:.02em;margin-right:8px}
+  /* ---- app screenshots ---- */
+  .appshots{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:30px;max-width:760px}
+  .appshots image-slot{width:100%;height:430px;display:block;box-shadow:0 22px 50px -18px rgba(35,40,45,.45)}
+
+  /* ---- creds ---- */
+  .creds{display:flex;flex-direction:column;gap:14px;margin-top:34px;font-size:var(--type-small);color:var(--ash-soft);line-height:1.4}
+  .creds b{color:var(--ash);font-weight:700}
+
+  /* ---- buttons ---- */
+  .btn{display:inline-flex;align-items:center;gap:14px;margin-top:40px;background:var(--coral);color:#23282D;
+    font-weight:600;font-size:var(--type-body);padding:20px 34px;border-radius:44px;text-decoration:none;
+    border:1px solid transparent;white-space:nowrap}
+  .btn.ghost{background:transparent;border-color:rgba(255,255,255,.42);color:#fff}
+  .btnrow{display:flex;flex-wrap:wrap;gap:18px;margin-top:44px}
+  .linknote{font-size:var(--type-small);color:var(--ash-soft);margin-top:16px;letter-spacing:.02em}
+
+  /* ---- cover ---- */
+  .cover-grid{display:grid;grid-template-columns:1.3fr .82fr;gap:96px;align-items:center;position:relative;z-index:3}
+  .cover h1{font-size:118px}
+  .cover h1 .tm{font-size:.32em;vertical-align:super;font-family:var(--font-body);color:var(--coral-light)}
+  .cover .sub{font-size:var(--type-subtitle);color:#E2E5E7;max-width:24ch;margin-top:34px;line-height:1.35}
+  .cover .meta{margin-top:54px;display:flex;flex-direction:column;gap:14px;
+     font-size:var(--type-body);color:#A7AEB4;letter-spacing:.01em}
+  .cover .meta b{color:#fff;font-weight:600}
+  .cover .meta a{color:var(--coral-light);text-decoration:none}
+  .cover-media{position:absolute;inset:0;z-index:0}
+  .cover-media img{width:100%;height:100%;object-fit:cover;object-position:center 40%}
+  .cover-scrim{position:absolute;inset:0;z-index:1;background:
+    linear-gradient(90deg,rgba(20,23,27,.95),rgba(20,23,27,.86) 28%,rgba(20,23,27,.46) 54%,rgba(20,23,27,.18)),
+    linear-gradient(0deg,rgba(20,23,27,.62),rgba(20,23,27,0) 26%)}
+  .cover-content{position:relative;z-index:3;max-width:54%}
+  .cover-full .foot{z-index:4}
+  .close-split{overflow:hidden}
+  .close-media{position:absolute;top:0;right:0;bottom:0;width:50%;z-index:0}
+  .close-media img{width:100%;height:100%;object-fit:cover;object-position:center 26%}
+  .close-media::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#23282d,rgba(35,40,45,0) 26%)}
+  .close-split .foot{z-index:4}
+
+  @media (prefers-reduced-motion:no-preference){
+    [data-deck-active] .anim{animation:rise .5s both}
+    [data-deck-active] .anim2{animation:rise .5s .08s both}
+    [data-deck-active] .anim3{animation:rise .5s .16s both}
+    @keyframes rise{from{transform:translateY(18px)}to{transform:none}}
+  }
+  /* never leave animated content invisible (print / capture / inactive) */
+  .anim,.anim2,.anim3{opacity:1}
+</style>
+<style data-styled="" data-styled-version="4.3.1"></style><style></style></head>
+<body data-new-gr-c-s-check-loaded="14.1299.0" data-gr-ext-installed="" style="" data-new-gr-c-s-loaded="14.1299.0">
+<deck-stage width="1920" height="1080" style="--deck-rail-w: 188px;">
+
+  <!-- 01 · COVER -->
+  <section class="dark cover cover-full" data-label="Cover">
+    <div class="cover-media"><img src="assets/cover-highfive.jpg" alt="Surgeons high-fiving in the operating room"></div>
+    <div class="cover-scrim"></div>
+    <div class="wrap cover-content">
+      <div class="eyebrow anim">Rachel Neylan Performance Consulting</div>
+      <h1 class="anim2">Surgeon<br>Performance<br>Readiness<span class="tm">™</span></h1>
+      <p class="sub anim3">A performance protection and optimisation system, built specifically for surgeons.</p>
+      <div class="meta anim3">
+        <span><b>Rachel Neylan</b> · OLY, MSc, BApp Sc</span>
+      </div>
+    </div>
+    <div class="foot"><span class="b">Surgeon Performance Readiness™</span><span>Introduction · 2026</span></div>
+  </section>
+
+  <!-- 02 · THE GAP -->
+  <section data-label="The Gap">
+    <div class="two media-right">
+      <div class="wrap">
+        <div class="eyebrow">The Gap</div>
+        <h2>We have upgraded the tools.<br>We never upgraded <em>the surgeon.</em></h2>
+        <p class="body" style="margin-top:34px">Every other elite performance domain, professional sport, aviation, the military, invests deliberately in the science of human performance: physiological monitoring, recovery architecture, cognitive regulation, longevity protection.</p>
+        <p class="body" style="margin-top:20px">Surgical careers are built and broken on the same variables. The systems that protect athletes have never reached the operating theatre. Surgeons are the most uncoached elite performers in the world.</p>
+      </div>
+      <div class="frame fr-portrait">
+        <img src="assets/operating-dark.jpg" alt="A surgeon operating under theatre light">
+      </div>
+    </div>
+    <div class="foot"><span class="b">Surgeon Performance Readiness™</span><span>02</span></div>
+  </section>
+
+  <!-- 03 · THE EVIDENCE -->
+  <section class="alt" data-label="The Evidence">
+    <div class="wrap">
+      <div class="eyebrow">The Rationale · The Evidence</div>
+      <h2></h2>
+      <p class="lead" style="margin-top:28px">Surgical excellence is a long-term performance system that demands deliberate investment across physiology, cognition and recovery. The evidence base is here, and it is growing.</p>
+      <div class="stats">
+        <div class="stat anim"><div class="big">793</div><div class="lbl">procedures monitored found higher early-case physiological balance linked to significantly fewer major complications.</div><div class="src">Awtry et al., 2025 · JAMA Surgery</div></div>
+        <div class="stat anim2"><div class="big">HRV</div><div class="lbl">A validated, real-time biomarker of stress and resilience in surgeons. Sleep is among the most potent recovery levers available.</div><div class="src">Jevsevar 2021 · Nandhra 2024</div></div>
+        <div class="stat anim3"><div class="big">6&nbsp;mo</div><div class="lbl">Physicians who tracked their physiology reported significantly lower burnout and higher resilience after six months.</div><div class="src">Dyrbye et al., 2025 · RCT</div></div>
+      </div>
+    </div>
+    <div class="foot"><span class="b">Surgeon Performance Readiness™</span><span>03</span></div>
+  </section>
+
+  <!-- 04 · THE REFRAME -->
+  <section class="dark" data-label="The Reframe">
+    <div class="two media-right">
+      <div class="wrap">
+        <div class="eyebrow">The Reframe</div>
+        <h2 style="font-size: 54px;">The most advanced system in the OR has always been, and always will be, <em>the surgeon.</em></h2>
+        <p class="lead" style="margin-top: 30px; font-size: 30px;">Smarter devices, faster technology&nbsp;<b style="color: rgb(255, 255, 255);">and</b> stronger surgeons. Sustainable performance is the new gold standard.</p>
+      </div>
+      <div class="frame fr-tall">
+        <img src="assets/surgeon-confident.jpg" alt="A confident surgeon in the operating room">
+      </div>
+    </div>
+    <div class="foot"><span class="b">Surgeon Performance Readiness™</span><span>04</span></div>
+  </section>
+
+  <!-- 05 · ABOUT RACHEL -->
+  <section data-label="Why Me">
+    <div class="two">
+      <div class="frame fr-portrait">
+        <img src="assets/rachel-podium.jpg" alt="Rachel Neylan on the podium" style="object-position:center 20%">
+      </div>
+      <div class="wrap">
+        <div class="eyebrow">Why Rachel</div>
+        <h2>Human performance, through <em>three lenses.</em></h2>
+        <p class="kicker-serif" style="font-size:32px;color:var(--ash-2);margin-top:16px"></p>
+        <p class="body" style="margin-top:28px">I spent 14 years as a professional cyclist, and know from experience that world-class performance is never an accident. It is built deliberately, through science, coaching, and systems that protect the human at the centre.</p>
+        <div class="creds">
+          <span><b>OLY</b> · Olympian, ex-professional cyclist &amp; World Championship medallist</span>
+          <span><b>BApp Sc</b> · Physiotherapy &nbsp;·&nbsp; <b>MSc</b> · Coaching Psychology</span>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span class="b">Surgeon Performance Readiness™</span><span>05</span></div>
+  </section>
+
+  <!-- 06 · THE SYSTEM -->
+  <section class="alt" data-label="The System">
+    <div class="wrap">
+      <div class="eyebrow">The System</div>
+      <h2>One system. <em>Three layers.</em> Built to reach every surgeon.</h2>
+      <p class="lead" style="margin-top:26px">The app is the foundation. Workshops and keynotes are the augmentation. Together they reach every surgeon, every day, with deeper engagement layered in where it adds the most value.</p>
+      <div class="stack-list">
+        <div class="stack-row"><div class="n">01</div><div><h4>SurgeON Track™ · the scale layer</h4><p>A deployable performance app for every surgeon. Seventeen domains, accessible 24/7. No room bookings, no clinical-time displacement.</p></div></div>
+        <div class="stack-row"><div class="n">02</div><div><h4>Workshops · the depth layer</h4><p>Targeted half-day or full-day sessions with specialty leads, training cohorts and leadership groups. The Performance Stack, applied.</p></div></div>
+        <div class="stack-row"><div class="n">03</div><div><h4>Keynotes · the visibility layer</h4><p>Network events and division meetings that set cultural tone and signal strategic commitment to the surgeon as a human performer.</p></div></div>
+      </div>
+    </div>
+    <div class="foot"><span class="b">Surgeon Performance Readiness™</span><span>06</span></div>
+  </section>
+
+  <!-- 07 · WHAT IT PROTECTS -->
+  <section data-label="What It Protects">
+    <div class="wrap">
+      <div style="display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center">
+        <div>
+          <div class="eyebrow">What It Protects</div>
+          <h2>Five strategic outcomes for <em>hospitals and health systems.</em></h2>
+          <p class="small" style="margin-top:24px;max-width:54ch">It pays for itself if it prevents a small number of cancelled lists, delays the loss of one senior surgeon, sustains marginal gains in case volume or quality, or reduces exposure to a patient safety event. Everything beyond that is upside.</p>
+        </div>
+        <div class="frame" style="height:400px"><img src="assets/theatre-team.jpg" alt="A surgical team operating" style="object-position:center 52%"></div>
+      </div>
+      <div class="out" style="margin-top:44px">
+        <div class="o"><h5>Theatre Reliability</h5><p>Consistent surgeon capacity. Fewer late starts, overruns and cancelled lists.</p></div>
+        <div class="o"><h5>Retention &amp; Longevity</h5><p>Protecting musculoskeletal and cognitive capacity that determines career length.</p></div>
+        <div class="o"><h5>Workforce Intelligence</h5><p>De-identified, longitudinal visibility of capacity trends. Early warning before impact.</p></div>
+        <div class="o"><h5>Performance &amp; Growth</h5><p>Sustained case volume, complexity and technical performance under load.</p></div>
+        <div class="o"><h5>Patient Safety</h5><p>Stronger decision-making, technical consistency and team performance.</p></div>
+      </div>
+    </div>
+    <div class="foot"><span class="b">Surgeon Performance Readiness™</span><span>07</span></div>
+  </section>
+
+  <!-- 08 · THE SUITE -->
+  <section class="dark" data-label="The Suite">
+    <div class="wrap">
+      <div class="eyebrow">The Suite</div>
+      <h2>Five ways to <em>close the gap.</em></h2>
+      <p class="lead" style="margin-top:22px;max-width:62ch">From a single keynote to a network-wide deployment. Each piece stands alone, and each one strengthens the others.</p>
+      <div class="cards">
+        <div class="ocard anim"><span class="num">01</span><span class="tag">Read</span><h4>Positioning Paper</h4><p>The Uncoached Athlete: the thesis and peer-reviewed evidence base behind the system.</p></div>
+        <div class="ocard anim"><span class="num">02</span><span class="tag">Speak</span><h4>Keynote</h4><p>The Surgeon Athlete: the talk that reframes performance and shifts the paradigm.</p></div>
+        <div class="ocard anim2"><span class="num">03</span><span class="tag">Build</span><h4>Performance Stack</h4><p>A 3-hour immersive workshop for 2 to 6 surgeons, built to drive tangible change.</p></div>
+        <div class="ocard anim2"><span class="num">04</span><span class="tag">Coach</span><h4>1:1 Coaching</h4><p>Three tiers of personalised 1:1 coaching, from monthly to fully comprehensive.</p></div>
+        <div class="ocard anim3"><span class="num">05</span><span class="tag">Scale</span><h4>SurgeON Track™</h4><p>A coaching and education app, ready for distribution and hospital licensing.</p></div>
+      </div>
+    </div>
+    <div class="foot"><span class="b">Surgeon Performance Readiness™</span><span>08</span></div>
+  </section>
+
+  <!-- 09 · POSITIONING PAPER -->
+  <section data-label="Positioning Paper">
+    <div class="two media-right">
+      <div class="wrap">
+        <div class="eyebrow">01 · Positioning Paper</div>
+        <h2>The Uncoached Athlete</h2>
+        <p class="kicker-serif" style="font-size:34px;color:var(--ash-2);margin-top:10px">Redefining Human Performance in the OR</p>
+        <p class="body" style="margin-top:30px">The written thesis and the rationale behind the system. A peer-evidenced case for treating the surgeon as the elite performer they already are. It draws on the science of stress regulation, HRV, sleep, recovery and deliberate practice, and maps it directly onto the operating theatre.</p>
+        <a class="btn" href="https://docs.google.com/document/d/e/2PACX-1vRO1F_XPaTpYImOVYuKfh7FzzL4yNy-y0zaL_AIdcQupoKFz4OOSVva2X99NAMsD6Bf88vyRwi9_e2N/pub" target="_blank" rel="noopener" id="paperLink"><span>Read the positioning paper</span><span class="arrow">→</span></a>
+      </div>
+      <div class="frame fr-portrait">
+        <img src="assets/surgeons-profile.jpg" alt="Surgeons in the operating room" style="object-position:center 30%">
+      </div>
+    </div>
+    <div class="foot"><span class="b">Surgeon Performance Readiness™</span><span>09</span></div>
+  </section>
+
+  <!-- 10 · KEYNOTE -->
+  <section class="alt" data-label="Keynote">
+    <div class="two">
+      <div class="frame fr-tall">
+        <img src="assets/workshop-cap.jpg" alt="A surgeon preparing in the operating room" style="object-position:center 30%">
+      </div>
+      <div class="wrap">
+        <div class="eyebrow">02 · Keynote</div>
+        <h2>The Surgeon Athlete</h2>
+        <p class="body" style="margin-top:24px">A keynote that reframes how surgeons, hospitals and colleges think about human performance. I take the audience from the start line of an Olympic Games to the start of a full surgical list, and show why world-class performance is never an accident.</p>
+        <p class="body" style="margin-top:18px">You all know the <em>what</em>. What I give you is the <em>why</em> and the <em>how</em>. And I promise: no burpees.</p>
+        <div class="chips">
+          <span class="chip">Conferences &amp; industry events</span>
+          <span class="chip">Surgical division meetings</span>
+          <span class="chip">Grand rounds</span>
+          <span class="chip">College &amp; society meetings</span>
+          <span class="chip">Device advisory boards</span>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span class="b">Surgeon Performance Readiness™</span><span>10</span></div>
+  </section>
+
+  <!-- 11 · WORKSHOP -->
+  <section data-label="Workshop">
+    <div class="two media-right">
+      <div class="wrap">
+        <div class="eyebrow">03 · Workshop</div>
+        <h2>The Surgeon's<br><em>Performance Stack</em></h2>
+        <p class="body" style="margin-top:22px">A hands-on workshop building personal performance strategy. Aggregate gains, stack to compound capacity.</p>
+        <div class="stack-list" style="margin-top:22px">
+          <div class="stack-row" style="padding:13px 0;border-top:none"><div class="n">·</div><div><h4>Sleep &amp; recovery architecture</h4><p>Putting back what the OR extracts.</p></div></div>
+          <div class="stack-row" style="padding:13px 0"><div class="n">·</div><div><h4>Neurobiology &amp; stress regulation</h4><p>Toggling between go and flow under load.</p></div></div>
+          <div class="stack-row" style="padding:13px 0"><div class="n">·</div><div><h4>Fuelling &amp; hydration</h4><p>The substrate for sustained focus.</p></div></div>
+          <div class="stack-row" style="padding:13px 0"><div class="n">·</div><div><h4>Physical Conditioning</h4><p>Strength and VO₂ for resilience and longevity.</p></div></div>
+        </div>
+      </div>
+      <div class="frame fr-portrait">
+        <img src="assets/surgeons-folder.jpg" alt="Surgeons reviewing in the operating room" style="object-position:center 35%">
+      </div>
+    </div>
+    <div class="foot"><span class="b">Surgeon Performance Readiness™</span><span>11</span></div>
+  </section>
+
+  <!-- 12 · COACHING -->
+  <section class="alt" data-label="Coaching">
+    <div class="wrap">
+      <div class="eyebrow">04 · Coaching</div>
+      <h2>1:1 surgeon coaching, <em>three ways in.</em></h2>
+      <p class="lead" style="margin-top:18px">A highly personalised framework designed to support sustainable high performance while protecting long-term health and career longevity.</p>
+      <div class="tiers">
+        <div class="tier">
+          <span class="t-tag">Tier 1 · Essential</span>
+          <h4>Monthly</h4>
+          <div class="per">6-month minimum</div>
+          <ul>
+            <li>Monthly 60-min coaching session</li>
+            <li>Baseline performance assessment</li>
+            <li>Sleep &amp; fatigue starter plan</li>
+            <li>Monthly workload review</li>
+            <li>Light WhatsApp / email support</li>
+          </ul>
+        </div>
+        <div class="tier feature">
+          <span class="t-tag">Tier 2 · Elite</span>
+          <div class="per">6-month minimum</div>
+          <ul>
+            <li>2 sessions monthly, flexible cadence</li>
+            <li>Conditioning &amp; longevity programming</li>
+            <li>Integrated sleep, fuelling &amp; recovery</li>
+            <li>Continuous monitoring: HRV, sleep, load</li>
+            <li>Quarterly review with data summary</li>
+          </ul>
+        </div>
+        <div class="tier">
+          <span class="t-tag">Tier 3 · High Touch</span>
+          <h4>360° Comprehensive</h4>
+          <div class="per">6-month blocks</div>
+          <ul>
+            <li>Coaching + performance lab sessions</li>
+            <li>In-OR assessment</li>
+            <li>Advanced biometrics &amp; analytics</li>
+            <li>Daily access + rapid response</li>
+            <li>Leadership &amp; cognitive-load coaching</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span class="b">Surgeon Performance Readiness™</span><span>12</span></div>
+  </section>
+
+  <!-- 13 · APP -->
+  <section class="alt" data-label="The App">
+    <div class="wrap">
+      <div class="eyebrow">05 · The App</div>
+      <h2>SurgeON Track™</h2>
+      <p class="lead" style="margin-top:18px;max-width:80ch">A performance coaching app for education, tracking and coaching that treats the surgeon as the elite performer they are. Two daily scores turn wearable data and case load into recovery and performance guidance.</p>
+      <div class="appshots">
+        <image-slot id="app-shot-1" shape="rounded" radius="26" placeholder="Drop app screenshot 1"></image-slot>
+        <image-slot id="app-shot-2" shape="rounded" radius="26" placeholder="Drop app screenshot 2"></image-slot>
+        <image-slot id="app-shot-3" shape="rounded" radius="26" placeholder="Drop app screenshot 3"></image-slot>
+      </div>
+      <div class="appfeat">
+        <span class="sc"><b>SRS</b>Surgeon Readiness Score</span><span class="sc"><b>ORFS</b>OR Fitness Score</span><span>CSV case data import</span><span>7-day readiness trends</span><span>Daily check-ins &amp; reminders</span><span>Goal tracking</span><span>The Playbook</span>
+      </div>
+    </div>
+    <div class="foot"><span class="b">Surgeon Performance Readiness™</span><span>13</span></div>
+  </section>
+
+  <!-- 14 · CLOSE -->
+  <section class="dark close-split" data-label="Close" data-deck-last-visible="">
+    <div class="close-media"><img src="assets/rachel-cover.jpg" alt="Rachel Neylan"></div>
+    <div class="wrap cover-content" style="max-width:48%">
+      <div class="eyebrow">Let's Close The Gap</div>
+      <h1 style="font-size:64px;max-width:15ch">We've spent millions sharpening the scalpel. Time to strengthen <span style="color:var(--coral-light)">the hand that holds it.</span></h1>
+      <p class="lead" style="margin-top:40px;font-size:30px;white-space:nowrap">Keynotes· Workshops · Coaching · SurgeON Track™</p>
+      <div class="btnrow">
+        <a class="btn" href="mailto:rachel@rachelneylan.com"><span>Start a conversation</span><span class="arrow">→</span></a>
+        <a class="btn ghost" href="https://www.rachelneylan.com" target="_blank" rel="noopener"><span>Visit the website</span><span class="arrow">→</span></a>
+      </div>
+      <div class="meta" style="margin-top:32px;display:flex;flex-direction:column;gap:10px;font-size:26px;color:#A7AEB4">
+        <span><b style="color:#fff">Rachel Neylan</b> · OLY, MSc, BApp Sc</span>
+      </div>
+    </div>
+    <div class="foot"><span class="b">Surgeon Performance Readiness™</span><span>© Rachel Neylan 2026</span></div>
+  </section>
+
+</deck-stage>
+<script src="image-slot.js"></script>
+<script src="deck-stage.js"></script>
+
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true" style="visibility: visible !important;"></grammarly-desktop-integration></html>
